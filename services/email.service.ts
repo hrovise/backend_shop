@@ -41,14 +41,14 @@ export class EmailService {
     });
   }
 
-  sendConfirmationEmail({ toUser, hash }: EmailOptions): Promise<any> {
+  sendConfirmationEmail({toUser, hash}: EmailOptions): Promise<any> {
     const message = {
       from: process.env.GOOGLE_USER,
       to: toUser,
       subject: 'Your App - Activate Account',
       html: `
         <h3>Добрий день!</h3>
-        <p>Дякуємо за реєстрацію, залишився один крок...</p>
+        <p>Дякуємо за реєстрацію, залишився один крок для її завершення</p>
         <p>Для активації акаунту, пройдіть за посиланням: 
         <a target="_" href="${process.env.DOMAIN}/activate/${hash}">Activate Link</a></p>
         <p>Всього найкращого!</p>
