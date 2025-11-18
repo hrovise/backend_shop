@@ -31,7 +31,4 @@ jobs:
           git merge origin/main --no-edit || echo "Merge conflicts, please resolve manually"
 
       - name: Push prod
-        run: git push origin prod
-        env:
-        
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_PAT }}
+        run: git push https://x-access-token:${{ secrets.PERSONAL_PAT }}@github.com/hrovise/backend_shop.git prod
