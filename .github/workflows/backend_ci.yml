@@ -33,4 +33,5 @@ jobs:
       - name: Push prod
         run: git push origin prod
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_PAT }}
