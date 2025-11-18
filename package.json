@@ -4,7 +4,8 @@
   "scripts": {
     "start:server": "node server.js",
     "start:dev": "node server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+     "test": "jest"
   },
   "private": true,
   "dependencies": {
@@ -32,6 +33,7 @@
     "@types/jest": "^30.0.0",
     "@types/mongoose-unique-validator": "^1.0.9",
     "@types/node": "^24.10.1",
+    "@types/nodemailer": "^7.0.4",
     "jest": "^30.2.0",
     "mongodb-memory-server": "^10.3.0",
     "nodemon": "^3.1.11",
