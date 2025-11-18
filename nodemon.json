@@ -1,0 +1,8 @@
+{
+  "env": {
+    "MONGO_USER": "Max",
+    "MONGO_PASSWORD": "oL2JYgo0xAzEuNID",
+    "MONGO_DEFAULT_DATABASE": "additives"
+    }
+}
+
