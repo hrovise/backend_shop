@@ -6,7 +6,7 @@ const express = require('express');
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const Auth = require("../middleware/check-auth");
-const User = require('../models/user');
+const User = require('../models/user/user.model');
 const AccessHash = require('../models/accessHash');
 
 const nodemailer = require('nodemailer');

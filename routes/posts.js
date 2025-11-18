@@ -5,7 +5,7 @@ require('dotenv').config({ path: `${'./backend/.env'}` });
 const Category = require('../models/category');
 
 const Post = require('../models/post');
-const User = require('../models/user')
+const User = require('../models/user/user.model')
 const Auth = require("../middleware/check-auth");
 const Comment = require('../models/comment');
 const nodemailer = require('nodemailer');

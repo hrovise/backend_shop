@@ -1,19 +1,22 @@
-const express = require('express');
-const fs = require('fs');
-require('dotenv').config();
-const mongoose = require ('mongoose');
-const postsRoutes = require('./routes/posts');
-const userRoutes = require('./routes/user');
-const shopRoutes = require('./routes/shop');
-const User = require('./models/user');
-const Auth = require("./middleware/check-auth");
-const helmet = require('helmet')
-const compression = require('compression')
-const morgan = require('morgan')
-
-mongoose.set('strictQuery', true);
-const bodyParser = require('body-parser');
 const path = require("path");
+const express = require("express");
+const fs = require("fs");
+require("dotenv").config();
+const mongoose = require("mongoose");
+const helmet = require("helmet");
+const compression = require("compression");
+const morgan = require("morgan");
+const bodyParser = require("body-parser");
+
+// Роуты и модели через __dirname
+const postsRoutes = require(path.join(__dirname, "routes", "posts"));
+const userRoutes = require(path.join(__dirname, "routes", "user"));
+const shopRoutes = require(path.join(__dirname, "routes", "shop"));
+const User = require(path.join(__dirname, "models", "user", "user.model"));
+const Auth = require(path.join(__dirname, "middleware", "check-auth"));
+
+mongoose.set("strictQuery", true);
+
 
 const app = express();
 

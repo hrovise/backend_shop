@@ -1,4 +1,6 @@
-const app = require("./app");
+const path = require("path");
+const app = require(path.join(__dirname, "..", "app"));
+
 const debug = require("debug")("node-angular");
 const http = require("http");
 // require('dotenv').config({ path: `${'./backend/.env'}` });
