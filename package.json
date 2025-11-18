@@ -29,9 +29,13 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/mongoose-unique-validator": "^1.0.9",
     "@types/node": "^24.10.1",
+    "jest": "^30.2.0",
+    "mongodb-memory-server": "^10.3.0",
     "nodemon": "^3.1.11",
+    "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }

@@ -1,26 +1,27 @@
 import mongoose from 'mongoose';
 import uniqueValidator from 'mongoose-unique-validator';
+import { IUser } from './user.interface';
 
 const Schema = mongoose.Schema;
 
 
 
-export interface IUser extends Document {
-  role: string;
-  name: string;
-  nameCompany: string;
-  city: string;
-  contacts: number;
-  email: string;
-  password: string;
-  cart: { items: { postId: mongoose.Types.ObjectId; quantity: number; imagePath: string }[] };
-  commentId?: mongoose.Types.ObjectId;
-  accessHashId?: mongoose.Types.ObjectId;
-  status?: string;
-  addToCart(product: any, quant: number): Promise<IUser>;
-  removeFromCart(postId: string): Promise<IUser>;
-  clearCart(): Promise<IUser>;
-}
+// export interface IUser extends Document {
+//   role: string;
+//   name: string;
+//   nameCompany: string;
+//   city: string;
+//   contacts: number;
+//   email: string;
+//   password: string;
+//   cart: { items: { postId: mongoose.Types.ObjectId; quantity: number; imagePath: string }[] };
+//   commentId?: mongoose.Types.ObjectId;
+//   accessHashId?: mongoose.Types.ObjectId;
+//   status?: string;
+//   addToCart(product: any, quant: number): Promise<IUser>;
+//   removeFromCart(postId: string): Promise<IUser>;
+//   clearCart(): Promise<IUser>;
+// }
 
 const userSchema = new Schema<IUser>({
   role: { type: String, required: true },
