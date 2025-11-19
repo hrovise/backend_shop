@@ -12,7 +12,7 @@ const AccessHash = require('../models/accessHash');
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
 const pendingUser = require('../models/pendinguser');
-
+const EmailService = require(path.join(__dirname,"../", "dist" ,"services", "email.service"));
 
 const router = express.Router();
 const ROLE_DEFAULT = 'USER';
@@ -22,74 +22,6 @@ const ROLE_ADMIN = 'ADMIN';
 
 
 
-sendResetPasswordEmail = function ({toUser, hash}) {
-return new Promise((res, rej) => {
-    const transporter = nodemailer.createTransport({
-     service: 'gmail',
-        auth: {
-            user: process.env.GOOGLE_USER,
-            pass: process.env.Password
-        }
-    })
-
-
-    const message = {
-      from: process.env.GOOGLE_USER,
-      to: toUser,
-      subject: 'Reset Password',
-      html: `
-      <h3>Добрий день  </h3>
-
-      <p>Для скидання паролю, пройдіть по посиланню: <a target="_" href="${process.env.DOMAIN}/newpass/${hash}">Reset Link</a></p>
-
-      <p> Якщо цю активність робили не ви, ігноруйте</p>
-      `
-   //hash - userId;
-    }
-      transporter.sendMail(message, function (error, info) {
-        if (error) {
-          rej(err); //console.log(error);
-        }
-        else
-          res(info)
-    })
-  })
-}
-
-sendConfirmationEmail = function ({ toUser, hash }) {
-
-  return new Promise((res, rej) => {
-    const transporter = nodemailer.createTransport({
-     service: 'gmail',
-        auth: {
-            user: process.env.GOOGLE_USER,
-            pass: process.env.Password
-        }
-    })
-
-
-    const message = {
-      from: process.env.GOOGLE_USER,
-      to: toUser,
-      subject: 'Your App - Activate Account',
-      html: `
-      <h3>Добрий день!  </h3>
-      <p>Дякуємо за реєстрацію, залишився один крок...</p>
-      <p>Для активації акаунту, пройдіть за посиланням: <a target="_" href="${process.env.DOMAIN}/activate/${hash}">Activate Link</a></p>
-      <p>Всього найкращого!</p>
-      <p> Якщо ви не реєструвались, проігноруйте</p>
-      `
-   //hash - userId;
-    }
-      transporter.sendMail(message, function (error, info) {
-        if (error) {
-          rej(err); //console.log(error);
-        }
-        else
-          res(info)
-    })
-  })
-}
 
 router.post('/reset', async(req, res, next) => {
 
@@ -108,7 +40,7 @@ router.post('/reset', async(req, res, next) => {
     const hash = await new AccessHash({ userId: user._id });
 
     await hash.save();
-    await sendResetPasswordEmail({toUser:user.email, hash:hash._id });
+    await EmailService.sendResetPasswordEmail({toUser:user.email, hash:hash._id });
     //emailer
     return res.json({message: 'Email is sent'})
   }
@@ -199,7 +131,7 @@ router.post('/signup', async(req, res, next) => {
 
      possibleUser.save();
 
-     sendConfirmationEmail({ toUser: possibleUser.email, hash:possibleUser._id });
+    EmailService.sendConfirmationEmail({ toUser: possibleUser.email, hash:possibleUser._id });
      res.json({message:"Go to email for activation"})
    })
   .catch(err => {
