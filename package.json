@@ -5,7 +5,7 @@
     "start:server": "node server.js",
     "start:dev": "node server.js",
     "start": "node server.js",
-     "test": "jest"
+    "test": "jest"
   },
   "private": true,
   "dependencies": {
@@ -32,6 +32,7 @@
   "devDependencies": {
     "@types/jest": "^30.0.0",
     "@types/mongoose-unique-validator": "^1.0.9",
+    "@types/multer": "^2.0.0",
     "@types/node": "^24.10.1",
     "@types/nodemailer": "^7.0.4",
     "jest": "^30.2.0",

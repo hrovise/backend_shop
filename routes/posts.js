@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 require('dotenv').config({ path: `${'./backend/.env'}` });
-
+const path = require('path');
 const Category = require('../models/category');
 
 const Post = require('../models/post');
@@ -9,34 +9,34 @@ const User = require('../models/user/user.model')
 const Auth = require("../middleware/check-auth");
 const Comment = require('../models/comment');
 const nodemailer = require('nodemailer');
-
+const PostService = require(path.join(__dirname,"../", "dist" ,"services", "posts.service"));
 
 const IMAGE = '/images/';
 const router = express.Router();
 
-const MIME_TYPE_MAP = {
-  "image/png": "png",
-  "image/jpeg": "jpg",
-  "image/jpg": "jpg"
-}
+// const MIME_TYPE_MAP = {
+//   "image/png": "png",
+//   "image/jpeg": "jpg",
+//   "image/jpg": "jpg"
+// }
 const ROLE_ADMIN = 'ADMIN';
 
-const storage = multer.diskStorage({
-  destination: (req, file, callback)=> {
-    const isValid = MIME_TYPE_MAP[file.mimetype];
-    let error = new Error("Invalid mime type");
-    if(isValid){
-      error= null;
-    }
+// const storage = multer.diskStorage({
+//   destination: (req, file, callback)=> {
+//     const isValid = MIME_TYPE_MAP[file.mimetype];
+//     let error = new Error("Invalid mime type");
+//     if(isValid){
+//       error= null;
+//     }
 
-    callback(error, "./images");
-  },
-  filename: (req, file, callback)=>{
-    const name = file.originalname.toLowerCase().split(' ').join('-');
-    const ext = MIME_TYPE_MAP[file.mimetype];
-    callback(null, name +'-'+ Date.now()+'.'+ ext)
-  }
-});
+//     callback(error, "./images");
+//   },
+//   filename: (req, file, callback)=>{
+//     const name = file.originalname.toLowerCase().split(' ').join('-');
+//     const ext = MIME_TYPE_MAP[file.mimetype];
+//     callback(null, name +'-'+ Date.now()+'.'+ ext)
+//   }
+// });
 
 router.post('/category', Auth, (req, res, next) => {
 
@@ -58,7 +58,7 @@ router.get('/categories',  (req, res, next) => {
 
 })
 
-router.post("", Auth, multer({ storage: storage }).single("image"), (req, res, next) => {
+router.post("", Auth, multer({ storage: PostService.storage }).single("image"), (req, res, next) => {
   const url = req.protocol + '://' + req.get("host");
 
   if (req.userData.role === ROLE_ADMIN) {
@@ -95,7 +95,7 @@ router.post("", Auth, multer({ storage: storage }).single("image"), (req, res, n
     res.json('failed')
   }
 });
-router.put('/:id',  multer({storage:storage}).single("image"), (req, res, next)=>{
+router.put('/:id', multer({storage: PostService.storage}).single("image"), (req, res, next)=>{
 
   let imagePath= req.body.imagePath;
 
