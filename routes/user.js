@@ -7,11 +7,11 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const Auth = require("../middleware/check-auth");
 const  User = require('../models/user/user.model').UserModel;
-const AccessHash = require('../models/accessHash');
+const AccessHash = require('../models/user/access_hash/access_hash.model').AccessHashModel;
 
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
-const pendingUser = require('../models/pendinguser');
+const pendingUser = require('../models/user/pendinguser.model').pendingUserModel;
 const EmailService = require("../services/email.service");
 
 const router = express.Router();

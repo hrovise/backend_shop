@@ -1,6 +1,9 @@
 import multer, { DiskStorageOptions, FileFilterCallback } from 'multer';
+import { DocumentType } from '@typegoose/typegoose';
 import { Request } from 'express';
 import path from 'path';
+import { CreatePostDto } from '../models/post/postDTO/create-post.dto';
+import { PostModel } from '../models/post/post.model';
 require('dotenv').config();
 
 const MIME_TYPE_MAP: { [key: string]: string } = {
@@ -38,5 +41,21 @@ public storage = multer.diskStorage({
     return this.upload.array(fieldName, maxCount);
   }
 
+
+  public async savePost(dto:CreatePostDto){
+   
+    const post = new PostModel({
+      category: dto.category,
+      title: dto.title,
+      price: dto.price,
+      content: dto.content,
+      contentLarge: dto.contentLarge,
+      quantity: dto.quantity,
+      imagePath: dto.imagePath,
+      userId: dto.userId
+    })
+   return await post.save();
+
+  }
 
   }

@@ -5,15 +5,18 @@ require('dotenv').config({ path: `${'./backend/.env'}` });
 
 const Category = require('../models/category/category.model').CategoryModel;
 
-const Post = require('../models/post/post.model').PostModel;
+const Post = require('../models/post');
 const User = require("../models/user/user.model").UserModel;
 const Auth = require("../middleware/check-auth");
-const Comment = require('../models/comment/comment.model').CommentModel;
+const CommentO = require('../models/comment/comment.model').CommentModel;
 const nodemailer = require('nodemailer');
 const PostService = require("../services/posts.service");
 
 const IMAGE = '/images/';
 const router = express.Router();
+import { DocumentType } from '@typegoose/typegoose';
+import { CreatePostDto } from '../models/post/postDTO/create-post.dto';
+
 
 // const MIME_TYPE_MAP = {
 //   "image/png": "png",
@@ -44,41 +47,43 @@ router.get('/categories',  (req, res, next) => {
 
 })
 
-router.post("", Auth, multer({ storage: PostService.storage }).single("image"), (req, res, next) => {
+router.post("", Auth, multer({ storage: PostService.storage }).single("image"), async (req, res, next) => {
   const url = req.protocol + '://' + req.get("host");
   
   if (req.userData.role === ROLE_ADMIN) {
-    const post = new Post({
+    const post:CreatePostDto ={
       category: req.body.category,
       title: req.body.title,
       price: req.body.price,
       content: req.body.content,
       contentLarge: req.body.contentLarge,
-      quantity: req.body.quantity.split(',').map(function(item){return parseInt(item, 10)}),
+     quantity: req.body.quantity.split(',').map((item: string) => parseInt(item, 10)),
       imagePath: url + IMAGE + req.file.filename,
       userId: req.userData.userId
-    });
+    }
 
-    post.save()
-      .then(createdPost => {
-        res.status(201).json({
-          message: 'Post added',
-          post: {
+   
+      try {
 
-            ...createdPost, //spread operator для айтемов
-            id: createdPost._id
-            // title: createdPost.title,
-            // content: createdPost.content,
-            // imagePath: createdPost.imagePath
-          }
-        });
-      });
+  const createdPost = await PostService.createPost(post);
+ 
+  res.status(201).json({
+    message: 'Post added',
+    post: {
+      ...createdPost.toObject(), 
+      id: createdPost._id
+    }
+  });
+} catch (error) {
+  console.error(error);
+  res.status(500).json({ message: "Creating a post failed!" });
+}
 
 
   }
   else {
 
-    res.json('failed')
+    res.json('you are not allowed')
   }
 });
 router.put('/:id', multer({storage: PostService.storage}).single("image"), (req, res, next)=>{
@@ -195,7 +200,7 @@ router.post('/comment', Auth, async(req, res, next) => {
     name = user.name;
 
   })
-  const comment = new Comment({
+  const comment = new CommentO({
     userId: req.userData.userId,
     email: req.userData.email,
     name: name,
@@ -216,7 +221,7 @@ router.post('/comment', Auth, async(req, res, next) => {
 router.get('/comments/:id',  (req, res, next) => {
   const arrayComment = [];
 
-  Comment.find({ postId: req.params.id })
+  CommentO.find({ postId: req.params.id })
     .then(result => {
       arrayComment.push(...result);
 
@@ -231,7 +236,7 @@ router.post('/commentdelete', Auth, (req, res, next) => {
   if (req.userData.role === ROLE_ADMIN)
   {
 
-    Comment.deleteOne({ _id: req.body.id }).then(resulty =>
+    CommentO.deleteOne({ _id: req.body.id }).then(resulty =>
       res.json({message: 'success'}) );
 
   }
@@ -275,7 +280,7 @@ router.post('/send', Auth, async (req, res, next) => {
     }
       transporter.sendMail(message, function (error, info) {
         if (error) {
-          rej(err);
+          rej(error);
         }
         else
           res(info)
