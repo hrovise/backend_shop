@@ -3,7 +3,7 @@ const express = require('express');
 const multer = require('multer');
 require('dotenv').config({ path: `${'./backend/.env'}` });
 
-const Category = require('../models/category');
+const Category = require('../models/category').CategoryModel;
 
 const Post = require('../models/post');
 const User = require("../models/user/user.model").UserModel;

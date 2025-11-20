@@ -1,5 +1,6 @@
 import { prop, getModelForClass, Ref } from '@typegoose/typegoose';
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
+import { AccessHash } from './access_hash/access_hash.model';
 
 class CartItem {
   @prop({ required: true, ref: 'Post' }) // Ссылка на модель 'Post' (даже если она на чистом Mongoose)
@@ -36,6 +37,9 @@ export class User {
  
   @prop({ ref: 'Comment' }) 
   public commentId?: mongoose.Types.ObjectId;
+
+  @prop({ ref:() =>AccessHash }) 
+  public accessHashId?: mongoose.Types.ObjectId;
 
 
 

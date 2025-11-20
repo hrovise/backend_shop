@@ -1,13 +1,12 @@
-const mongoose = require('mongoose');
+import { prop, getModelForClass, Ref } from '@typegoose/typegoose';
+import mongoose  from "mongoose";
 
-const Schema = mongoose.Schema;
 
-const accessHashSchema = new Schema({
-  userId: {
-   type: Schema.Types.ObjectId,
-   ref: 'User',
 
-  }
+export class AccessHash {
+  @prop({ required: true, ref: 'User' }) // Ссылка на модель 'User' (даже если она на чистом Mongoose)
+  public userId!: mongoose.Types.ObjectId
+}
 
-})
-module.exports = mongoose.model('accessHash', accessHashSchema);
+
+export const AccessHashModel=getModelForClass(AccessHash);
