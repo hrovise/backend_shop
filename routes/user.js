@@ -6,13 +6,13 @@ const express = require('express');
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const Auth = require("../middleware/check-auth");
-const User = require('../models/user/user.model');
+const  User = require('../models/user/user.model').UserModel;
 const AccessHash = require('../models/accessHash');
 
 const nodemailer = require('nodemailer');
 const sendgridTransport = require('nodemailer-sendgrid-transport');
 const pendingUser = require('../models/pendinguser');
-const EmailService = require(path.join(__dirname,"../", "dist" ,"services", "email.service"));
+const EmailService = require("../services/email.service");
 
 const router = express.Router();
 const ROLE_DEFAULT = 'USER';

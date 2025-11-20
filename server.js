@@ -1,5 +1,5 @@
 const path = require("path");
-const app = require(path.join(__dirname, "..", "app"));
+const app = require("./app");
 
 const debug = require("debug")("node-angular");
 const http = require("http");

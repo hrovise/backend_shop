@@ -1,15 +1,16 @@
+const path = require('path');
 const express = require('express');
 const multer = require('multer');
 require('dotenv').config({ path: `${'./backend/.env'}` });
-const path = require('path');
+
 const Category = require('../models/category');
 
 const Post = require('../models/post');
-const User = require('../models/user/user.model')
+const User = require("../models/user/user.model").UserModel;
 const Auth = require("../middleware/check-auth");
 const Comment = require('../models/comment');
 const nodemailer = require('nodemailer');
-const PostService = require(path.join(__dirname,"../", "dist" ,"services", "posts.service"));
+const PostService = require("../services/posts.service");
 
 const IMAGE = '/images/';
 const router = express.Router();

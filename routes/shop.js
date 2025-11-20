@@ -1,7 +1,8 @@
+const path = require('path');
 const express = require('express');
 const Post = require('../models/post');
 const Auth = require("../middleware/check-auth");
-const User = require('../models/user/user.model')
+const User = require("../models/user/user.model").UserModel;
 const Order = require('../models/order')
 
 

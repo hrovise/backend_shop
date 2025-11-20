@@ -1,27 +1,5 @@
-import mongoose from 'mongoose';
-import uniqueValidator from 'mongoose-unique-validator';
-import { IUser } from './user.interface';
-
-const Schema = mongoose.Schema;
-
-
-
-// export interface IUser extends Document {
-//   role: string;
-//   name: string;
-//   nameCompany: string;
-//   city: string;
-//   contacts: number;
-//   email: string;
-//   password: string;
-//   cart: { items: { postId: mongoose.Types.ObjectId; quantity: number; imagePath: string }[] };
-//   commentId?: mongoose.Types.ObjectId;
-//   accessHashId?: mongoose.Types.ObjectId;
-//   status?: string;
-//   addToCart(product: any, quant: number): Promise<IUser>;
-//   removeFromCart(postId: string): Promise<IUser>;
-//   clearCart(): Promise<IUser>;
-// }
+import mongoose, { Schema } from "mongoose";
+import  { IUser } from "./user.interface";
 
 const userSchema = new Schema<IUser>({
   role: { type: String, required: true },
@@ -34,63 +12,51 @@ const userSchema = new Schema<IUser>({
   cart: {
     items: [
       {
-        postId: { type: Schema.Types.ObjectId, ref: 'Post', required: true },
+        postId: { type: Schema.Types.ObjectId, ref: "Post", required: true },
         quantity: { type: Number, required: true },
-        imagePath: { type: String, required: true }
-      }
-    ]
+        imagePath: { type: String, required: true },
+      },
+    ],
   },
-  commentId: { type: Schema.Types.ObjectId, ref: 'Comment' },
-  accessHashId: { type: Schema.Types.ObjectId, ref: 'accessHash' },
-  status: { type: String }
+  commentId: { type: Schema.Types.ObjectId, ref: "Comment" },
+  accessHashId: { type: Schema.Types.ObjectId, ref: "accessHash" },
+  status: { type: String },
 });
 
-userSchema.plugin(uniqueValidator);
-userSchema.methods.addToCart = async function (product:any, quant:any) { //25,1000
+// METHODS
+userSchema.methods.addToCart = async function (product, quant) {
+  const idx = this.cart.items.findIndex(
+    (cp) => cp.postId.toString() === product._id.toString()
+  );
 
-      const cartProductIndex = await this.cart.items.findIndex((cp:any) => {
+  let newQuantity = quant;
+  const updated = [...this.cart.items];
 
-            return cp.postId.toString() === product._id.toString();
-        });
-        let newQuantity = quant; //25/1000
-        const updatedCartItems = [...this.cart.items];
+  if (idx >= 0) {
+    newQuantity = this.cart.items[idx].quantity + quant;
+    updated[idx].quantity = newQuantity;
+  } else {
+    updated.push({
+      postId: product._id,
+      quantity: newQuantity,
+      imagePath: product.imagePath,
+    });
+  }
 
-        if (cartProductIndex >= 0) {
-            newQuantity = this.cart.items[cartProductIndex].quantity + quant;//25/1000/
-            updatedCartItems[cartProductIndex].quantity = newQuantity;
-        } else {
-            updatedCartItems
-                .push({postId: product._id, quantity: newQuantity, imagePath: product.imagePath  })
-        }
-
-        const updatedCart = {
-      items: updatedCartItems
-    };
-
-
-
-  this.cart = updatedCart;
-  let i = 0;
-
+  this.cart.items = updated;
   return this.save();
+};
 
-
-}
-
-userSchema.methods.removeFromCart = function (postId:any) {
-
-  const updatedCartItems = this.cart.items.filter((item:any) => {
-
-                 return item._id.toString() !== postId.toString();
-         });
-  this.cart.items = updatedCartItems;
-
+userSchema.methods.removeFromCart = function (postId) {
+  this.cart.items = this.cart.items.filter(
+    (item) => item.postId.toString() !== postId
+  );
   return this.save();
-      }
+};
 
 userSchema.methods.clearCart = function () {
-  this.cart = { items: [] };
+  this.cart.items = [];
   return this.save();
-    }
+};
 
-module.exports = mongoose.model('User', userSchema);
+export const UserModel = mongoose.model<IUser>("User", userSchema);

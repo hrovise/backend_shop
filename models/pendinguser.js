@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const uniqueValidator = require("mongoose-unique-validator")
+
 
 
 const Schema = mongoose.Schema;
@@ -40,6 +40,6 @@ const pendingUserSchema = new Schema({
 
 })
 
-pendingUserSchema.plugin(uniqueValidator);
+
 
 const pendingUser = module.exports = mongoose.model('pendingUser', pendingUserSchema);

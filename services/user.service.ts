@@ -1,5 +1,5 @@
-
 import { IUser } from "../models/user/user.interface";
+
 
 export class UserService {
   async addToCart(user: IUser, product: any, quant: number): Promise<IUser> {

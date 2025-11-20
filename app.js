@@ -9,11 +9,11 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 
 // Роуты и модели через __dirname
-const postsRoutes = require(path.join(__dirname, "routes", "posts"));
-const userRoutes = require(path.join(__dirname, "routes", "user"));
-const shopRoutes = require(path.join(__dirname, "routes", "shop"));
-const User = require(path.join(__dirname, "models", "user", "user.model"));
-const Auth = require(path.join(__dirname, "middleware", "check-auth"));
+const postsRoutes = require("./routes/posts");
+const userRoutes = require("./routes/user");
+const shopRoutes = require("./routes/shop");
+
+const Auth = require("./middleware/check-auth");
 
 mongoose.set("strictQuery", true);
 
