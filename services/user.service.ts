@@ -1,8 +1,10 @@
-import { IUser } from "../models/user/user.interface";
+import { User } from "../models/user/user.model";
+import { DocumentType } from '@typegoose/typegoose';
+
 
 
 export class UserService {
-  async addToCart(user: IUser, product: any, quant: number): Promise<IUser> {
+  async addToCart(user: DocumentType<User>, product: any, quant: number): Promise<DocumentType<User>> {
     const cartProductIndex = user.cart.items.findIndex(
       cp => cp.postId.toString() === product._id.toString()
     );
@@ -25,14 +27,14 @@ export class UserService {
     return user.save();
   }
 
-  async removeFromCart(user: IUser, postId: string): Promise<IUser> {
+  async removeFromCart(user: DocumentType<User>, postId: string): Promise<DocumentType<User>> {
     user.cart.items = user.cart.items.filter(
       item => item.postId.toString() !== postId
     );
     return user.save();
   }
 
-  async clearCart(user: IUser): Promise<IUser> {
+  async clearCart(user: DocumentType<User>): Promise<DocumentType<User>> {
     user.cart.items = [];
     return user.save();
   }

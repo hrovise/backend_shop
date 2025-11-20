@@ -1,62 +1,46 @@
+import { prop, getModelForClass, Ref } from '@typegoose/typegoose';
 import mongoose, { Schema } from "mongoose";
-import  { IUser } from "./user.interface";
 
-const userSchema = new Schema<IUser>({
-  role: { type: String, required: true },
-  name: { type: String, required: true },
-  nameCompany: { type: String, required: true },
-  city: { type: String, required: true },
-  contacts: { type: Number, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  cart: {
-    items: [
-      {
-        postId: { type: Schema.Types.ObjectId, ref: "Post", required: true },
-        quantity: { type: Number, required: true },
-        imagePath: { type: String, required: true },
-      },
-    ],
-  },
-  commentId: { type: Schema.Types.ObjectId, ref: "Comment" },
-  accessHashId: { type: Schema.Types.ObjectId, ref: "accessHash" },
-  status: { type: String },
-});
+class CartItem {
+  @prop({ required: true, ref: 'Post' }) // Ссылка на модель 'Post' (даже если она на чистом Mongoose)
+  public postId!: mongoose.Types.ObjectId;
 
-// METHODS
-userSchema.methods.addToCart = async function (product, quant) {
-  const idx = this.cart.items.findIndex(
-    (cp) => cp.postId.toString() === product._id.toString()
-  );
+  @prop({ required: true })
+  public quantity!: number;
 
-  let newQuantity = quant;
-  const updated = [...this.cart.items];
+  @prop({ required: true })
+  public imagePath!: string;
+}
 
-  if (idx >= 0) {
-    newQuantity = this.cart.items[idx].quantity + quant;
-    updated[idx].quantity = newQuantity;
-  } else {
-    updated.push({
-      postId: product._id,
-      quantity: newQuantity,
-      imagePath: product.imagePath,
-    });
-  }
+class Cart {
+  @prop({ type: () => [CartItem], default: [] }) 
+  public items!: CartItem[];
+}
 
-  this.cart.items = updated;
-  return this.save();
-};
+export class User {
+  @prop({ required: true })
+  public role!: string;
 
-userSchema.methods.removeFromCart = function (postId) {
-  this.cart.items = this.cart.items.filter(
-    (item) => item.postId.toString() !== postId
-  );
-  return this.save();
-};
+  @prop({ required: true })
+  public name!: string;
 
-userSchema.methods.clearCart = function () {
-  this.cart.items = [];
-  return this.save();
-};
+  @prop({ required: true, unique: true })
+  public email!: string;
 
-export const UserModel = mongoose.model<IUser>("User", userSchema);
+  @prop({ required: true })
+  public password!: string;
+
+  @prop({ _id: false }) 
+  public cart!: Cart;
+
+ 
+  @prop({ ref: 'Comment' }) 
+  public commentId?: mongoose.Types.ObjectId;
+
+
+
+
+
+}
+
+export const UserModel = getModelForClass(User);

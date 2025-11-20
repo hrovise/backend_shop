@@ -2,9 +2,10 @@
   "name": "app",
   "version": "0.0.0",
   "scripts": {
-    "start:server": "node server.js",
-    "start:dev": "node server.js",
-    "start": "node server.js",
+    "start:server": "node dist/server.js",
+    "start:dev": "nodemon dist/server.js",
+    "start": "node dist/server.js",
+    "build": "tsc",
     "test": "jest"
   },
   "private": true,
