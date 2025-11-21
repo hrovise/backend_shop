@@ -51,7 +51,8 @@ router.post('/reset', async(req, res, next) => {
 })
 
 router.post('/resetpassword', async (req, res, next) => {
-
+ 
+    let newP;
 
   const { password, hash } = req.body;
 
@@ -79,7 +80,7 @@ router.get('/activate/user/:id', async (req, res, next) => {
 
   const  hash  = req.params.id;
   try {
-    const user = await pendingUser.findOne({_id: hash});
+    const user = await PendingUser.findOne({_id: hash});
 
     if (!user) {
       return res.status(422).send('User is not found')
@@ -160,6 +161,7 @@ const transporter = nodemailer.createTransport(sendgridTransport({
 
 router.post("/login", async(req, res, next) => {
 
+    let fetchedUser;
   await User.findOne({ email: req.body.email })
     .then(user => {
       if (!user) {
@@ -171,7 +173,7 @@ router.post("/login", async(req, res, next) => {
 
       }
 
-      fetchedUser = user;
+       fetchedUser = user;
       if (fetchedUser.status === "blocked") {
 
      return
@@ -210,7 +212,7 @@ router.post("/login", async(req, res, next) => {
 
 
 router.get('/getuser', Auth, (req, res, next) => {
-
+ let fetchedUser;
   User.findOne({ email: req.userData.email })
     .then(user => {
 

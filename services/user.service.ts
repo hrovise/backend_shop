@@ -1,9 +1,19 @@
+import { createUserDto } from "../models/user/user-dto/create-user.dto";
 import { User } from "../models/user/user.model";
 import { DocumentType } from '@typegoose/typegoose';
 
 
 
 export class UserService {
+
+
+
+  // async saveUser(user: createUserDto): Promise<User> {
+    
+  //  todo
+  // }
+
+
   async addToCart(user: DocumentType<User>, product: any, quant: number): Promise<DocumentType<User>> {
     const cartProductIndex = user.cart.items.findIndex(
       cp => cp.postId.toString() === product._id.toString()
