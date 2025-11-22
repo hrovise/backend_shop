@@ -23,32 +23,7 @@ import * as UserController from '../controllers/user.controller';
 
 
 
-router.post('/reset', async(req, res, next) => {
-
-
-  const  email  = req.body.email;
-
-  try {
-    const user = await User.findOne({email:email });
-
-    if (!user) { return res.status(422).send('no user') }
-
-    const hasHash = await AccessHash.findOne({ userId: user._id }); //tut ne ponyanto
-
-    if (hasHash) { return res.status(422).send("email sent already") };//otpravil
-
-    const hash = await new AccessHash({ userId: user._id });
-
-    await hash.save();
-    await EmailService.sendResetPasswordEmail({toUser:user.email, hash:hash._id });
-    //emailer
-    return res.json({message: 'Email is sent'})
-  }
-  catch {
-    return res.status(422).send({ message:'something bad'});
-  }
-
-})
+router.post('/resetpasswordrequest', UserController.passwordResetRequest);
 
 router.post('/resetpassword', async (req, res, next) => {
  
