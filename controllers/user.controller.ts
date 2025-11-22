@@ -4,26 +4,22 @@ import {PendingUserModel} from '../models/user/pendingUser.model';
 import {EmailService}  from '../services/email.service';
 import bcrypt from 'bcrypt';
 import {  AccessHashModel } from '../models/user/access_hash/access_hash.model';     
+import { UserService } from '../services/user.service';
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
 const ROLE_DEFAULT = 'USER';
 const ROLE_ADMIN = 'ADMIN';
   const emailService = new EmailService();
-
+  const userService = new UserService();
 
 export const signup = async (req:Request, res:Response) => {
-    let rUser;
-    let pUser;
-      await UserModel.findOne({ email: req.body.email })
-        .then(user => {
-          rUser = user;
-        });
-      await PendingUserModel.findOne({ email: req.body.email })
-        .then(user => {
-          pUser = user;
-        });
+   
+
+  const existingUser = userService.checkExistingUser(req.body.email);
     
     
-      if (pUser || rUser) {
+      if (existingUser) {
     
         return res.send({ message: 'User is exist' });
       }
@@ -45,14 +41,15 @@ export const signup = async (req:Request, res:Response) => {
    await emailService.sendConfirmationEmail({ toUser: pendingUser.email, hash:pendingUser._id.toString() });
          res.json({message:"Go to email for activation"})
        })
-      .catch(err => {
-    
-    
-                res.status(201).json({
-                    success: false,
-            error: err._message
-                  })
-          })
+      .catch(err => {  
+
+             res.status(201).json({
+             success: false,
+             error: err._message
+
+            })
+
+         })
 
 }
 
@@ -68,7 +65,7 @@ export const signup = async (req:Request, res:Response) => {
 
     if (hasHash) { return res.status(422).send("email sent already") };//otpravil
 
-    const hash = await new AccessHashModel({ userId: user._id });
+    const hash =  new AccessHashModel({ userId: user._id });
 
     await hash.save();
     await emailService.sendResetPasswordEmail({toUser:user.email, hash:hash._id.toString() });
@@ -76,7 +73,7 @@ export const signup = async (req:Request, res:Response) => {
     return res.json({message: 'Email is sent'})
   }
   catch {
-    return res.status(422).send({ message:'something bad'});
+    return res.status(422).send({ message:"email wasn't sent"}) ;
   }
     }
 
@@ -103,4 +100,51 @@ export const signup = async (req:Request, res:Response) => {
   } catch {
       return res.status(422).send("Something went wrong")
   }
+    }
+
+    export const login = async (req:Request, res:Response) => {
+      let fetchedUser;
+  await UserModel.findOne({ email: req.body.email })
+    .then(user => {
+      if (!user) {
+
+      return
+      
+      }
+
+       fetchedUser = user;
+      if (fetchedUser.status === "blocked") {
+
+     return
+      }
+      return bcrypt.compare(req.body.password, user.password)
+
+    })
+    .then(result => {
+
+
+
+      if (typeof (result) === 'object' ) {
+        //  res.redirect(`${process.env.DOMAIN}/login`);
+        return res.json({
+          message: "Auth failed"
+        })
+      }  else if(result===true) {
+
+        const token = jwt.sign({ role: fetchedUser.role, email: fetchedUser.email, userId: fetchedUser._id }, 'secret_this_should_be_longer',
+          { expiresIn: "1h" });
+      return  res.status(200).json({
+
+          token: token,
+          expiresIn: 3600,
+          role: fetchedUser.role
+        })
+      }
+      return res.send({ message: 'Failed' });
+ })
+ .catch(err=> {
+  return res.json({
+    message: "Auth failed"
+  })
+ })
     }

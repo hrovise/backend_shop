@@ -1,5 +1,6 @@
+import { PendingUserModel } from "../models/user/pendingUser.model";
 import { createUserDto } from "../models/user/user-dto/create-user.dto";
-import { User } from "../models/user/user.model";
+import { User, UserModel } from "../models/user/user.model";
 import { DocumentType } from '@typegoose/typegoose';
 
 
@@ -47,5 +48,18 @@ export class UserService {
   async clearCart(user: DocumentType<User>): Promise<DocumentType<User>> {
     user.cart.items = [];
     return user.save();
+  }
+
+
+  async checkExistingUser(email: string): Promise<boolean> {
+    
+     const user= await UserModel.findOne({ email: email })
+          
+       const pendingUser=  await PendingUserModel.findOne({ email: email})
+           
+
+        return !!(user || pendingUser)
+        
+
   }
 }

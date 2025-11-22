@@ -52,67 +52,12 @@ router.get('/activate/user/:id', async (req, res, next) => {
 
 router.post('/signup', UserController.signup); 
 
-const transporter = nodemailer.createTransport(sendgridTransport({
-  auth: {
-
-    api_key: process.env.API_KEY
-  }
-}));
 
 
 
 
 
-router.post("/login", async(req, res, next) => {
-
-    let fetchedUser;
-  await User.findOne({ email: req.body.email })
-    .then(user => {
-      if (!user) {
-
-      return
-        // return res.status(200).json({
-        //   message: "Auth failed"
-        // });
-
-      }
-
-       fetchedUser = user;
-      if (fetchedUser.status === "blocked") {
-
-     return
-      }
-      return bcrypt.compare(req.body.password, user.password)
-
-    })
-    .then(result => {
-
-
-
-      if (typeof (result) === 'object' ) {
-        //  res.redirect(`${process.env.DOMAIN}/login`);
-        return res.json({
-          message: "Auth failed"
-        })
-      }  else if(result===true) {
-
-        const token = jwt.sign({ role: fetchedUser.role, email: fetchedUser.email, userId: fetchedUser._id }, 'secret_this_should_be_longer',
-          { expiresIn: "1h" });
-      return  res.status(200).json({
-
-          token: token,
-          expiresIn: 3600,
-          role: fetchedUser.role
-        })
-      }
-      return res.send({ message: 'Failed' });
- })
- .catch(err=> {
-  return res.json({
-    message: "Auth failed"
-  })
- })
-})
+router.post("/login", UserController.login); 
 
 
 router.get('/getuser', Auth, (req, res, next) => {
