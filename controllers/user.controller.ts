@@ -87,7 +87,7 @@ export const signup = async (req:Request, res:Response) => {
 
     if (!aHash) {
 
-      return res.status(422).send('no pass');
+      return res.status(422).send('no password');
     }
     newP =await bcrypt.hash(password, 10)
 
