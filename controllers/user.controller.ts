@@ -3,7 +3,7 @@ import {UserModel} from '../models/user/user.model';
 import {PendingUserModel} from '../models/user/pendingUser.model';
 import {EmailService}  from '../services/email.service';
 import bcrypt from 'bcrypt';
-import { AccessHashModel } from '../models/user/access_hash/access_hash.model';     
+import {  AccessHashModel } from '../models/user/access_hash/access_hash.model';     
 
 const ROLE_DEFAULT = 'USER';
 const ROLE_ADMIN = 'ADMIN';
@@ -77,5 +77,30 @@ export const signup = async (req:Request, res:Response) => {
   }
   catch {
     return res.status(422).send({ message:'something bad'});
+  }
+    }
+
+    export const passwordReset = async (req:Request, res:Response) => {
+            let newP;
+
+  const { password, hash } = req.body;
+
+  try {
+    const aHash = await AccessHashModel.findOne({ _id: hash });
+
+    if (!aHash) {
+
+      return res.status(422).send('no pass');
+    }
+    newP =await bcrypt.hash(password, 10)
+
+    await UserModel.updateOne({ _id: aHash.userId },{
+      password : newP
+    })
+    await aHash.deleteOne();
+
+    return res.json({message: 'Password is changed'})
+  } catch {
+      return res.status(422).send("Something went wrong")
   }
     }

@@ -25,31 +25,7 @@ import * as UserController from '../controllers/user.controller';
 
 router.post('/resetpasswordrequest', UserController.passwordResetRequest);
 
-router.post('/resetpassword', async (req, res, next) => {
- 
-    let newP;
-
-  const { password, hash } = req.body;
-
-  try {
-    const aHash = await AccessHash.findOne({ _id: hash });
-
-    if (!aHash) {
-
-      return res.status(422).send('no pass');
-    }
-    newP =await bcrypt.hash(password, 10)
-
-    await User.updateOne({ _id: aHash.userId },{
-      password : newP
-    })
-    await aHash.remove();
-
-    return res.json({message: 'Password is changed'})
-  } catch {
-      return res.status(422).send("Something went wrong")
-  }
-});
+router.post('/resetpassword', UserController.passwordReset);
 
 router.get('/activate/user/:id', async (req, res, next) => {
 
