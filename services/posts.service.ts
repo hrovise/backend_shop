@@ -1,5 +1,5 @@
 import multer, { DiskStorageOptions, FileFilterCallback } from 'multer';
-import { DocumentType } from '@typegoose/typegoose';
+
 import { Request } from 'express';
 import path from 'path';
 import { CreatePostDto } from '../models/post/postDTO/create-post.dto';

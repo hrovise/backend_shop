@@ -18,7 +18,7 @@ const router = express.Router();
 const ROLE_DEFAULT = 'USER';
 const ROLE_ADMIN = 'ADMIN';
 
-
+import * as UserController from '../controllers/user.controller'; 
 
 
 
@@ -99,54 +99,7 @@ router.get('/activate/user/:id', async (req, res, next) => {
 
 })
 
-router.post('/signup', async(req, res, next) => {
-
-  let rUser;
-  let pUser;
-  await User.findOne({ email: req.body.email })
-    .then(user => {
-      rUser = user;
-    });
-  await PendingUser.findOne({ email: req.body.email })
-    .then(user => {
-      pUser = user;
-    });
-
-
-  if (pUser || rUser) {
-
-    return res.send({ message: 'User is exist' });
-  }
-  bcrypt.hash(req.body.password, 10)
-   .then(hash => {
-  const possibleUser = new PendingUser({
-           role: ROLE_DEFAULT,
-            name: req.body.name,
-            nameCompany: req.body.nameCompany,
-            city: req.body.city,
-            contacts: req.body.contacts,
-            email: req.body.email,
-            password: hash
-  })
-
-
-     possibleUser.save();
-
-    EmailService.sendConfirmationEmail({ toUser: possibleUser.email, hash:possibleUser._id });
-     res.json({message:"Go to email for activation"})
-   })
-  .catch(err => {
-
-
-            res.status(201).json({
-                success: false,
-        error: err._message
-              })
-      })
-
-
-
-});
+router.post('/signup', UserController.signup); 
 
 const transporter = nodemailer.createTransport(sendgridTransport({
   auth: {
