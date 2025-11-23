@@ -131,7 +131,7 @@ export const signup = async (req:Request, res:Response) => {
         })
       }  else if(result===true) {
 
-        const token = jwt.sign({ role: fetchedUser.role, email: fetchedUser.email, userId: fetchedUser._id }, 'secret_this_should_be_longer',
+        const token = jwt.sign({ role: fetchedUser.role, email: fetchedUser.email, userId: fetchedUser._id }, process.env.SECRET_JWT,
           { expiresIn: "1h" });
       return  res.status(200).json({
 
@@ -148,3 +148,159 @@ export const signup = async (req:Request, res:Response) => {
   })
  })
     }
+
+
+
+      export const activateUser= async (req:Request, res:Response) => {
+      const  hash  = req.params.id;
+    try {
+      const user = await PendingUserModel.findOne({_id: hash});
+
+      if (!user) {
+        return res.status(422).send('User is not found')
+      }
+
+      const userToDb = new UserModel({ ...JSON.parse(JSON.stringify(user)) });
+
+    await userToDb.save();
+      await user.deleteOne({_id: hash});
+      res.json({ message: `User ${hash} has been activated` });
+    } catch {
+
+      res.json({ message: `User ${hash} has cannot activated` });
+  }
+
+    
+    }
+
+
+    export const getUser= async (req:Request, res:Response) => {
+let fetchedUser;
+  UserModel.findOne({ email: req.userData.email })
+    .then(user => {
+
+      fetchedUser = user;
+    })
+    .then((result) => {
+    res.status(200).json({
+
+      user: fetchedUser
+
+  })
+  })
+
+    }
+
+
+    export const userDashboard = async (req:Request, res:Response) => {
+      
+      UserModel.findOne({ email: req.body.email })
+    .then(user => {
+      if (!user) {
+        return res.status(401).json({
+          message: "No user"
+        });
+      }
+      return res.status(200).json({
+        user: user
+      })
+
+    })
+      
+  
+        }
+
+        export const getUserDashboardSearch= async (req:Request, res:Response) => {
+           UserModel.findOne({ email: req.body.email })
+    .then(user => {
+      if (!user) {
+        return res.status(401).json({
+          message: "No user"
+        });
+      }
+
+      if (user.role == ROLE_ADMIN) {
+        user.role = ROLE_DEFAULT;
+      }
+
+      user.save();
+      return res.status(200).json({
+        message: 'success',
+        role: user.role
+      })
+
+    })
+        }
+
+        export const getDashboardSearch = async (req:Request, res:Response) => {
+          UserModel.findOne({ email: req.body.email })
+    .then(user => {
+      if (!user) {
+        return res.status(401).json({
+          message: "No user"
+        });
+      }
+
+      if (user.role == ROLE_DEFAULT) {
+        user.role = ROLE_ADMIN;
+      }
+
+      user.save();
+      return res.status(200).json({
+        message: 'success',
+        role: user.role
+      })
+
+    })
+      }
+
+        export const getUserRole= async (req:Request, res:Response) => {
+         UserModel.findOne({ email: req.userData.email })
+    .then(user => {
+      if (!user) {
+        return res.status(401).json({
+          message: "No user"
+        });
+      }
+
+
+        return res.status(200).json({
+          message: 'success',
+          role: user.role
+        })
+
+
+
+
+    })
+  }
+
+  export const blockUser = async (req:Request, res:Response) => {
+    await UserModel.updateOne({ email: req.body.email }, {
+    status: 'blocked'
+
+  }).then(() => {
+    return res.send({ message: "заблоковано" })
+  })
+      }     
+
+      export const unBlockUser = async (req:Request, res:Response) => {
+        await UserModel.updateOne({ email: req.body.email }, {
+        status: 'unblocked'
+  
+      }).then(() => {
+        return res.send({ message: "розблоковано" })
+      })
+          }
+
+
+          export const updateUser = async (req:Request, res:Response) => {
+            await UserModel.updateOne({ email: req.body.email }, {
+            name: req.body.name,
+            nameCompany: req.body.nameCompany,
+            contacts: req.body.contacts
+  
+          }).then(() => {
+            return res.send({ message: "success update" })
+          })
+              }

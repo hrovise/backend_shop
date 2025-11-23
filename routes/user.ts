@@ -27,183 +27,28 @@ router.post('/resetpasswordrequest', UserController.passwordResetRequest);
 
 router.post('/resetpassword', UserController.passwordReset);
 
-router.get('/activate/user/:id', async (req, res, next) => {
-
-  const  hash  = req.params.id;
-  try {
-    const user = await PendingUser.findOne({_id: hash});
-
-    if (!user) {
-      return res.status(422).send('User is not found')
-    }
-
-    const userToDb = new User({ ...JSON.parse(JSON.stringify(user)) });
-
-   await userToDb.save();
-    await user.deleteOne({_id: hash});
-     res.json({ message: `User ${hash} has been activated` });
-  } catch {
-
-     res.json({ message: `User ${hash} has cannot activated` });
- }
-
-
-})
+router.get('/activate/user/:id', UserController.activateUser);
 
 router.post('/signup', UserController.signup); 
-
-
-
-
 
 
 router.post("/login", UserController.login); 
 
 
-router.get('/getuser', Auth, (req, res, next) => {
- let fetchedUser;
-  User.findOne({ email: req.userData.email })
-    .then(user => {
+router.get('/getuser', Auth, UserController.getUser);
+ 
 
-      fetchedUser = user;
-    })
-    .then((result) => {
-    res.status(200).json({
-
-      user: fetchedUser
-
-  })
-  })
-
-})
-
-router.post("/dashboard", Auth, (req, res, next) => {
-
-
-  User.findOne({ email: req.body.email })
-    .then(user => {
-      if (!user) {
-        return res.status(401).json({
-          message: "No user"
-        });
-      }
-      return res.status(200).json({
-        user: user
-      })
-
-    })
-})
-
-router.post("/dashboard-search", Auth, (req, res, next) => {
-
-
-  User.findOne({ email: req.body.email })
-    .then(user => {
-      if (!user) {
-        return res.status(401).json({
-          message: "No user"
-        });
-      }
-
-      if (user.role == ROLE_DEFAULT) {
-        user.role = ROLE_ADMIN;
-      }
-
-      user.save();
-      return res.status(200).json({
-        message: 'success',
-        role: user.role
-      })
-
-    })
-})
-
-router.post("/dashboard-search-user", Auth, (req, res, next) => {
-
-
-  User.findOne({ email: req.body.email })
-    .then(user => {
-      if (!user) {
-        return res.status(401).json({
-          message: "No user"
-        });
-      }
-
-      if (user.role == ROLE_ADMIN) {
-        user.role = ROLE_DEFAULT;
-      }
-
-      user.save();
-      return res.status(200).json({
-        message: 'success',
-        role: user.role
-      })
-
-    })
-})
-router.post("/role", Auth, (req, res, next) => {
-  //const email = req.userData.email;
-
-  User.findOne({ email: req.userData.email })
-    .then(user => {
-      if (!user) {
-        return res.status(401).json({
-          message: "No user"
-        });
-      }
-
-
-        return res.status(200).json({
-          message: 'success',
-          role: user.role
-        })
+router.post("/dashboard", Auth, UserController.userDashboard ); 
 
 
 
+router.post("/dashboard-search", Auth, UserController.getDashboardSearch);
 
-    })
-})
-router.post('/block', Auth, async (req, res, next) => {
-
-  await User.updateOne({ email: req.body.email }, {
-    status: 'blocked'
-
-  }).then(() => {
-    return res.send({ message: "заблоковано" })
-  })
-
-})
-router.post('/unblock', Auth, async (req, res, next) => {
-
-  await User.updateOne({ email: req.body.email }, {
-    status: 'unblocked'
-
-  }).then(() => {
-    return res.send({ message: "розблоковано" })
-  })
-
-})
-router.post('/updateuser', Auth, async(req, res, next) => {
-
-  let fetchedUser;
-
-
-
-    await User.updateOne({ email: req.userData.email },{
-      //  email: req.body.email
-      name: req.body.name,
-      nameCompany: req.body.nameCompany,
-      contacts: req.body.contacts
-    })
-
-      .then(() => {
-     //req.userData.email = req.body.email;
-
-
-        return res.send({message:"success update"})
-        });
-
-})
+router.post("/dashboard-search-user", Auth, UserController.getUserDashboardSearch);
+router.post("/role", Auth, UserController.getUserRole);
+router.post('/block', Auth, UserController.blockUser);
+router.post('/unblock', Auth, UserController.unBlockUser);
+router.post('/updateuser', Auth, UserController.updateUser);
 
 
 module.exports = router;
