@@ -1,0 +1,118 @@
+import { Request, Response } from 'express';
+import bcrypt from 'bcrypt';
+import { CategoryModel } from '../models/category/category.model';
+import { CreatePostDto } from '../models/post/postDTO/create-post.dto';
+import { PostService } from '../services/posts.service';
+import { PostModel } from '../models/post/post.model';
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+const IMAGE = '/images/';
+const ROLE_ADMIN = 'ADMIN';
+
+const postService = new PostService();
+
+
+export const createCategory = async (req:Request, res:Response) => {
+
+    
+    const category = new CategoryModel({
+      category: req.body.category,
+
+    });
+
+    category.save()
+      .then(createdPost => {
+        res.status(201).json({
+          message: 'Post added',
+          post: {
+
+            ...createdPost, //spread operator для айтемов
+            id: createdPost._id
+            // title: createdPost.title,
+            // content: createdPost.content,
+            // imagePath: createdPost.imagePath
+          }
+        });
+      });
+}
+
+
+export const createPost = async (req:Request, res:Response) => {
+ const url = req.protocol + '://' + req.get("host");
+  
+  if (req.userData.role === ROLE_ADMIN) {
+    const post:CreatePostDto ={
+      category: req.body.category,
+      title: req.body.title,
+      price: req.body.price,
+      content: req.body.content,
+      contentLarge: req.body.contentLarge,
+     quantity: req.body.quantity.split(',').map((item: string) => parseInt(item, 10)),
+      imagePath: url + IMAGE + req.file.filename,
+      userId: req.userData.userId
+    }
+
+   
+      try {
+
+  const createdPost = await postService.savePost(post);
+ 
+  res.status(201).json({
+    message: 'Post added',
+    post: {
+      ...createdPost.toObject(), 
+      id: createdPost._id
+    }
+  });
+} catch (error) {
+  console.error(error);
+  res.status(500).json({ message: "Creating a post failed!" });
+}
+
+
+  }
+  else {
+
+    res.json('you are not allowed')
+  }
+}
+
+
+export const deleteCategory = async  (req:Request, res:Response) => {
+  const id = req.params.id;
+  CategoryModel.deleteOne({ _id: id })
+    .then(() => {
+      res.status(200).json({ message: 'Post deleted' });
+    });
+}
+
+
+export const getAllCategories = async   (req:Request, res:Response) => {
+  CategoryModel.find()
+    .then(documents => {
+      res.status(200).json({
+        message: 'Posts fetched successfully!',
+        posts: documents
+      });
+    });
+}
+
+
+export const updatePost = async (req:Request, res:Response) => {
+  const id = req.params.id;
+  const url = req.protocol + '://' + req.get("host");
+  const post:CreatePostDto = {
+    category: req.body.category,
+    title: req.body.title,
+    price: req.body.price,
+    content: req.body.content,
+    contentLarge: req.body.contentLarge,
+   quantity: req.body.quantity.split(',').map((item: string) => parseInt(item, 10)),
+    imagePath: url + IMAGE + req.file.filename,
+    userId: req.userData.userId
+  }
+  await PostModel.updateOne({_id:id.toString()}, post)
+    .then(() => {
+      res.status(200).json({ message: 'Post updated' });
+    });
+}

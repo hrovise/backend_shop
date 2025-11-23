@@ -57,5 +57,9 @@ public storage = multer.diskStorage({
    return await post.save();
 
   }
+// public async updatePost(dto:UpdatePost){
 
+//   }
   }
+
+  

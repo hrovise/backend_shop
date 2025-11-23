@@ -16,7 +16,7 @@ const IMAGE = '/images/';
 const router = express.Router();
 import { DocumentType } from '@typegoose/typegoose';
 import { CreatePostDto } from '../models/post/postDTO/create-post.dto';
-
+import * as PostController from '../controllers/post.controller';
 
 // const MIME_TYPE_MAP = {
 //   "image/png": "png",
@@ -27,93 +27,14 @@ const ROLE_ADMIN = 'ADMIN';
 
 
 
-router.post('/category', Auth, (req, res, next) => {
+router.post('/categoryDelete', Auth, PostController.deleteCategory);
 
-  Category.deleteOne({ category: req.body.category })
-    .then(
-      res.status(200).json({ message: 'category deleted' })
-   )
+router.get('/categories', PostController.getAllCategories);
 
-})
+router.post("", Auth, multer({ storage: PostService.storage }).single("image"), PostController.createPost);
 
-router.get('/categories',  (req, res, next) => {
-  let category=[];
-   Category.find().then(categories=>{
-     category = categories;
-  }).then(() => {
-    res.send({ category });
-  })
+router.put('/:id', multer({storage: PostService.storage}).single("image"), PostController.updatePost);
 
-
-})
-
-router.post("", Auth, multer({ storage: PostService.storage }).single("image"), async (req, res, next) => {
-  const url = req.protocol + '://' + req.get("host");
-  
-  if (req.userData.role === ROLE_ADMIN) {
-    const post:CreatePostDto ={
-      category: req.body.category,
-      title: req.body.title,
-      price: req.body.price,
-      content: req.body.content,
-      contentLarge: req.body.contentLarge,
-     quantity: req.body.quantity.split(',').map((item: string) => parseInt(item, 10)),
-      imagePath: url + IMAGE + req.file.filename,
-      userId: req.userData.userId
-    }
-
-   
-      try {
-
-  const createdPost = await PostService.createPost(post);
- 
-  res.status(201).json({
-    message: 'Post added',
-    post: {
-      ...createdPost.toObject(), 
-      id: createdPost._id
-    }
-  });
-} catch (error) {
-  console.error(error);
-  res.status(500).json({ message: "Creating a post failed!" });
-}
-
-
-  }
-  else {
-
-    res.json('you are not allowed')
-  }
-});
-router.put('/:id', multer({storage: PostService.storage}).single("image"), (req, res, next)=>{
-
-  let imagePath= req.body.imagePath;
-
-  if(req.file){
-
-    const url = req.protocol + '://'+ req.get("host");
-    imagePath=url + IMAGE +   req.file.filename;
-
-  }
-
-  const post = new Post({
-    _id: req.body.id,
-    category: req.body.category,
-    title: req.body.title,
-  price: +req.body.price,
-    content: req.body.content,
-    contentLarge: req.body.contentLarge,
-  quantity: req.body.quantity.split(',').map(function(item){return parseInt(item, 10)}),
-  imagePath: imagePath
- })
-
-  Post.updateOne({_id: req.params.id}, post)
-  .then(result => {
-
-    res.status(200).json({message: 'Update succesfull'})
-  })
-});
 router.get('',(req,res,next)=>{
   const pageSize = +req.query.pagesize;
   const currentPage = +req.query.page;
@@ -167,33 +88,7 @@ router.delete('/:id', (req, res, next) => {
 });
 
 
-router.post('/categoryC', Auth, (req, res, next) => {
-
-
-    const category = new Category({
-      category: req.body.category,
-
-    });
-
-    category.save()
-      .then(createdPost => {
-        res.status(201).json({
-          message: 'Post added',
-          post: {
-
-            ...createdPost, //spread operator для айтемов
-            id: createdPost._id
-            // title: createdPost.title,
-            // content: createdPost.content,
-            // imagePath: createdPost.imagePath
-          }
-        });
-      });
-
-
-
-
-});
+router.post('/categoryC', Auth, PostController.createCategory)
 router.post('/comment', Auth, async(req, res, next) => {
   let name;
  await User.findById(req.userData.userId).then(user => {

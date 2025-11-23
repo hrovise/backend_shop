@@ -6,6 +6,7 @@ declare global {
       userData?: {
         userId: string;
         email: string;
+        role:string;
       }
     }
   }
