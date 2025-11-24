@@ -116,3 +116,28 @@ export const updatePost = async (req:Request, res:Response) => {
       res.status(200).json({ message: 'Post updated' });
     });
 }
+
+export const getAllPosts = async   (req:Request, res:Response) => {
+  const pageSize = +req.query.pagesize;
+  const currentPage = +req.query.page;
+  const postQuery = PostModel.find();
+  let fetchedPosts;
+  if(pageSize && currentPage) {
+    postQuery
+    .skip(pageSize * (currentPage - 1))
+    .limit(pageSize);
+  }
+  postQuery
+  .then((documents)=>{
+    fetchedPosts = documents;
+  return PostModel.countDocuments();
+  //
+  }
+  ).then(count=>{
+      res.status(200).json({
+    message: 'Posts are fetched',
+    posts: fetchedPosts,
+    maxPosts: count
+  });
+});
+}
