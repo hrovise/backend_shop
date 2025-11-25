@@ -36,15 +36,8 @@ router.post("", Auth, multer({ storage: PostService.storage }).single("image"), 
 router.put('/:id', multer({storage: PostService.storage}).single("image"), PostController.updatePost);
 
 router.get('', PostController.getAllPosts);
-router.get('/:id', (req,res,next)=>{
- Post.findById(req.params.id).then(post=>{
-  if(post) {
-    res.status(200).json(post);
-  } else{
-    res.status(404).json({message:"no Post"});
-  }
- })
-});
+router.get('/:id', PostController.getPostById);
+
 router.delete('/:id', (req, res, next) => {
 
   Post.deleteOne({_id:req.params.id})

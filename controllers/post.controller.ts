@@ -141,3 +141,14 @@ export const getAllPosts = async   (req:Request, res:Response) => {
   });
 });
 }
+
+export const getPostById= async (req:Request, res:Response) => {
+  const id = req.params.id;
+  PostModel.findById(id)
+    .then(post => {
+      if (!post) {
+        return res.status(404).json({ message: 'Post not found' });
+      }
+      res.status(200).json({ post });
+    });
+}
