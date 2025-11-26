@@ -152,3 +152,11 @@ export const getPostById= async (req:Request, res:Response) => {
       res.status(200).json({ post });
     });
 }
+
+export const deleteOne = async  (req:Request, res:Response) => {
+  const id = req.params.id;
+  PostModel.deleteOne({ _id: id })
+    .then(() => {
+      res.status(200).json({ message: 'Post deleted' });
+    });
+}

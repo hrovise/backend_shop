@@ -38,15 +38,7 @@ router.put('/:id', multer({storage: PostService.storage}).single("image"), PostC
 router.get('', PostController.getAllPosts);
 router.get('/:id', PostController.getPostById);
 
-router.delete('/:id', (req, res, next) => {
-
-  Post.deleteOne({_id:req.params.id})
-    .then(() => {
-     res.status(200).json({message:'Post deleted'})
-  });
-
-
-});
+router.delete('/:id', PostController.deleteOne);
 
 
 router.post('/categoryC', Auth, PostController.createCategory)
