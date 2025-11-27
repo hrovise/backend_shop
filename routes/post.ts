@@ -42,29 +42,7 @@ router.delete('/:id', PostController.deleteOne);
 
 
 router.post('/categoryC', Auth, PostController.createCategory)
-router.post('/comment', Auth, async(req, res, next) => {
-  let name;
- await User.findById(req.userData.userId).then(user => {
-    name = user.name;
-
-  })
-  const comment = new CommentO({
-    userId: req.userData.userId,
-    email: req.userData.email,
-    name: name,
-    postId: req.body.id,
-    content: req.body.content,
-    date: req.body.date
-
-  });
-
-  comment.save();
-    let id = req.body.id;
-    res.json('good')
-
-
-
-})
+router.post('/comment', Auth, PostController.getComment);
 
 router.get('/comments/:id',  (req, res, next) => {
   const arrayComment = [];

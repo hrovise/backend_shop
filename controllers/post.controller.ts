@@ -4,6 +4,8 @@ import { CategoryModel } from '../models/category/category.model';
 import { CreatePostDto } from '../models/post/postDTO/create-post.dto';
 import { PostService } from '../services/posts.service';
 import { PostModel } from '../models/post/post.model';
+import { CommentModel } from '../models/comment/comment.model';
+import { UserModel } from '../models/user/user.model';
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const IMAGE = '/images/';
@@ -159,4 +161,27 @@ export const deleteOne = async  (req:Request, res:Response) => {
     .then(() => {
       res.status(200).json({ message: 'Post deleted' });
     });
+}
+
+export const getComment = async (req:Request, res:Response)=>{
+
+  let name;
+ await UserModel.findById(req.userData.userId).then(user => {
+    name = user.name;
+
+  })
+  const comment = new CommentModel({
+    userId: req.userData.userId,
+    email: req.userData.email,
+    name: name,
+    postId: req.body.id,
+    content: req.body.content,
+    date: req.body.date
+
+  });
+
+  comment.save();
+    let id = req.body.id;
+    res.json('good')
+
 }
