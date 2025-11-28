@@ -185,3 +185,17 @@ export const getComment = async (req:Request, res:Response)=>{
     res.json('good')
 
 }
+
+
+export const getOneComment = async (req:Request, res:Response)=>{
+  const arrayComment = [];
+
+  CommentModel.find({ postId: req.params.id })
+    .then(result => {
+      arrayComment.push(...result);
+
+      res.send({
+        comments: arrayComment
+      })
+  })
+}

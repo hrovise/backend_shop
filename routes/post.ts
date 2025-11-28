@@ -44,19 +44,7 @@ router.delete('/:id', PostController.deleteOne);
 router.post('/categoryC', Auth, PostController.createCategory)
 router.post('/comment', Auth, PostController.getComment);
 
-router.get('/comments/:id',  (req, res, next) => {
-  const arrayComment = [];
-
-  CommentO.find({ postId: req.params.id })
-    .then(result => {
-      arrayComment.push(...result);
-
-      res.send({
-        comments: arrayComment
-      })
-  })
-
-})
+router.get('/comments/:id',  PostController.getOneComment);
 router.post('/commentdelete', Auth, (req, res, next) => {
 
   if (req.userData.role === ROLE_ADMIN)
