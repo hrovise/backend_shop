@@ -199,3 +199,15 @@ export const getOneComment = async (req:Request, res:Response)=>{
       })
   })
 }
+
+export const deleteComment = async (req:Request, res:Response)=>{
+ if (req.userData.role === ROLE_ADMIN)
+  {
+
+    CommentModel.deleteOne({ _id: req.body.id }).then(resulty =>
+      res.json({message: 'success'}) );
+
+  }
+  else
+ res.json({ message: "no rights" });
+}

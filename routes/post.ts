@@ -45,19 +45,7 @@ router.post('/categoryC', Auth, PostController.createCategory)
 router.post('/comment', Auth, PostController.getComment);
 
 router.get('/comments/:id',  PostController.getOneComment);
-router.post('/commentdelete', Auth, (req, res, next) => {
-
-  if (req.userData.role === ROLE_ADMIN)
-  {
-
-    CommentO.deleteOne({ _id: req.body.id }).then(resulty =>
-      res.json({message: 'success'}) );
-
-  }
-  else
- res.json({ message: "no rights" });
-})
-
+router.post('/commentdelete', PostController.deleteComment);
 
 router.post('/send', Auth, async (req, res, next) => {
   let name;
