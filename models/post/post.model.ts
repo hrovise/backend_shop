@@ -30,7 +30,7 @@ export class Post {
     @prop({ required: true, ref:()=>User })            
     public userId!: mongoose.Types.ObjectId
 
-    @prop({ required: true, ref: ()=> Comment})            
+    @prop({ ref: ()=> Comment})            
     public commentId!: mongoose.Types.ObjectId  
 }
 

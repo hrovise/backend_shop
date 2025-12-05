@@ -31,8 +31,8 @@ export class User {
   @prop({ required: true })
   public password!: string;
 
-  @prop({ required: true, unique: true })
-  
+  @prop({ required: true})
+
   public contacts!: string;
   @prop({ _id: false }) 
   public cart!: Cart;

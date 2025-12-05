@@ -47,50 +47,7 @@ router.post('/comment', Auth, PostController.getComment);
 router.get('/comments/:id',  PostController.getOneComment);
 router.post('/commentdelete', PostController.deleteComment);
 
-router.post('/send', Auth, async (req, res, next) => {
-  let name;
-  let contacts
-  const email = req.userData.email;
-  await User.findOne({email: req.userData.email})
-    .then(user => {
+router.post('/send', Auth, PostController.consultEmail);
 
-    name = user.name;
-    contacts = user.contacts
-
-  }).then(() => {
-
-    return new Promise((res, rej) => {
-    const transporter = nodemailer.createTransport({
-     service: 'gmail',
-        auth: {
-            user: "shopadditivesukit@gmail.com",
-            pass: process.env.Password
-        }
-    })
-
-
-    const message = {
-      from: "shopadditivesukit@gmail.com",
-      to: "shopadditivesukit@gmail.com",
-      subject: `Консультація ${req.body.title}`,
-      html: `
-      <h3>Замовлення від ${name} ${email} ${contacts}</h3>
-      <h2>Додадток ${req.body.title}</h2>
-      <p>Питання: ${req.body.text}</p>
-      `
-   //hash - userId;
-    }
-      transporter.sendMail(message, function (error, info) {
-        if (error) {
-          rej(error);
-        }
-        else
-          res(info)
-    })
-  })
-  })
-
-
-})
 
 module.exports = router;

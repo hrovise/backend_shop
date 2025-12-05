@@ -56,7 +56,7 @@ export class UserService {
      const user= await UserModel.findOne({ email: email })
           
        const pendingUser=  await PendingUserModel.findOne({ email: email})
-           
+       
 
         return !!(user || pendingUser)
         

@@ -54,7 +54,7 @@ router.post('/order', Auth, async(req, res, next) => {
 req.user
  .populate('cart.items.postId')
   .then(user => {
-  const posts = user.cart.items.map(i => {
+  const posts = user.cart?.items.map(i => {
 
 
             return { quantity: i.quantity, post: {...i.postId._doc } }
@@ -184,7 +184,7 @@ router.get('/orders', Auth, (req, res, next) => {
     orderQuery
       .then(items => {
         fetchedOrders = items;
-        return Order.count();
+        return Order.countDocuments();
       })
       .then(count => {
 

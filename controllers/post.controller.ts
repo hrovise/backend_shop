@@ -17,7 +17,7 @@ const emailService = new EmailService();
 
 export const createCategory = async (req:Request, res:Response) => {
 
-    
+   
     const category = new CategoryModel({
       category: req.body.category,
 
