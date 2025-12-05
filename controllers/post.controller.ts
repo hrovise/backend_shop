@@ -6,13 +6,14 @@ import { PostService } from '../services/posts.service';
 import { PostModel } from '../models/post/post.model';
 import { CommentModel } from '../models/comment/comment.model';
 import { UserModel } from '../models/user/user.model';
+import { EmailService } from '../services/email.service';
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const IMAGE = '/images/';
 const ROLE_ADMIN = 'ADMIN';
 
 const postService = new PostService();
-
+const emailService = new EmailService();
 
 export const createCategory = async (req:Request, res:Response) => {
 
@@ -210,4 +211,15 @@ export const deleteComment = async (req:Request, res:Response)=>{
   }
   else
  res.json({ message: "no rights" });
+}
+
+export const consultEmail = async (req:Request, res:Response) => {
+  const email = req.body.email;
+const user = await UserModel.findOne({ email: email });
+ 
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+     await emailService.sendConsultEmail(user, req.body.title, req.body.text);
+   
 }

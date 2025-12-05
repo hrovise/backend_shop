@@ -1,5 +1,8 @@
   //import nodemailer from 'nodemailer';
   // import * as dotenv from "dotenv";
+import { DocumentType } from '@typegoose/typegoose';
+import { User, UserModel } from "../models/user/user.model";
+
   // dotenv.config();
 const nodemailer = require('nodemailer');
 require('dotenv').config();
@@ -65,5 +68,48 @@ require('dotenv').config();
         });
       });
     }
+    sendConsultEmail (user:DocumentType<User>, title:string, text:string): Promise<any> {
+      // await UserModel.findOne({ email: email })
+      //    .then((user) => {
+      //      if (!user) {
+      //        return;
+      //      }
+     
+          
+      //      return user;
+      //    }).then((user) => {
+
+    return new Promise((res, rej) => {
+    const transporter = nodemailer.createTransport({
+     service: 'gmail',
+        auth: {
+            user: "shopadditivesukit@gmail.com",
+            pass: process.env.Password
+        }
+    })
+
+
+    const message = {
+      from: "shopadditivesukit@gmail.com",
+      to: "shopadditivesukit@gmail.com",
+      subject: `Консультація ${title}`,
+      html: `
+      <h3>Замовлення від ${user.name} ${user.email} ${user.contacts}</h3>
+      <h2>Додадток ${title}</h2>
+      <p>Питання: ${text}</p>
+      `
+   //hash - userId;
+    }
+      transporter.sendMail(message, function (error, info) {
+        if (error) {
+          rej(error);
+        }
+        else
+          res(info)
+    })
+  })
   }
+    
+  }
+
 
