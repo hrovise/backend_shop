@@ -1,9 +1,10 @@
 import multer, { DiskStorageOptions, FileFilterCallback } from 'multer';
-
+import { v2 as cloudinary } from 'cloudinary';
 import { Request } from 'express';
 import path from 'path';
 import { CreatePostDto } from '../models/post/postDTO/create-post.dto';
 import { PostModel } from '../models/post/post.model';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 require('dotenv').config();
 
 const MIME_TYPE_MAP: { [key: string]: string } = {
@@ -14,32 +15,65 @@ const MIME_TYPE_MAP: { [key: string]: string } = {
 
   export class PostService {
 
-public storage = multer.diskStorage({
-    destination: (req: Request, file: Express.Multer.File, callback: (error: Error | null, destination: string)=> void)=> {
-      const isValid = MIME_TYPE_MAP[file.mimetype];
-      let error: Error | null = new Error('Invalid mime type');
-      if (isValid) {
-        error = null;
-      }
-      callback(error, path.join(__dirname, '../../images'));
-    },
-    filename: (req: Request, file: Express.Multer.File, callback: (error: Error | null, filename: string) => void) => {
-      const name = file.originalname.toLowerCase().split(' ').join('-');
-      const ext = MIME_TYPE_MAP[file.mimetype];
-      callback(null, `${name}-${Date.now()}.${ext}`);
+
+    constructor() {
+cloudinary.config({
+      cloud_name: process.env.CLOUDY_NAME, 
+      api_key: process.env.API_KEY_CLOUD,       
+      api_secret: process.env.API_SECRET_CLOUD  
+    });
+    }
+private storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: async (req, file) => {
+      return {
+        folder: 'shop-images', 
+        format: 'png',           
+        public_id: file.originalname.split('.')[0] + '-' + Date.now(), 
+      };
     },
   });
 
+
+ 
   public upload = multer({ storage: this.storage });
 
-  
+ 
   public singleUpload(fieldName: string) {
     return this.upload.single(fieldName);
   }
 
+  
   public multipleUpload(fieldName: string, maxCount: number) {
     return this.upload.array(fieldName, maxCount);
   }
+
+// public storage = multer.diskStorage({
+//     destination: (req: Request, file: Express.Multer.File, callback: (error: Error | null, destination: string)=> void)=> {
+//       const isValid = MIME_TYPE_MAP[file.mimetype];
+//       let error: Error | null = new Error('Invalid mime type');
+//       if (isValid) {
+//         error = null;
+//       }
+//       callback(error, path.join(__dirname, '../../images'));
+//     },
+//     filename: (req: Request, file: Express.Multer.File, callback: (error: Error | null, filename: string) => void) => {
+//       const name = file.originalname.toLowerCase().split(' ').join('-');
+//       const ext = MIME_TYPE_MAP[file.mimetype];
+//       callback(null, `${name}-${Date.now()}.${ext}`);
+//     },
+//   });
+
+//   public upload = multer({ storage: this.storage });
+
+  
+//   public singleUpload(fieldName: string) {
+//     return this.upload.single(fieldName);
+//   }
+
+//   public multipleUpload(fieldName: string, maxCount: number) {
+//     return this.upload.array(fieldName, maxCount);
+//   }
 
 
   public async savePost(dto:CreatePostDto){

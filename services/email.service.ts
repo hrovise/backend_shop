@@ -1,6 +1,6 @@
   //import nodemailer from 'nodemailer';
   // import * as dotenv from "dotenv";
-import { DocumentType } from '@typegoose/typegoose';
+import  { DocumentType } from '@typegoose/typegoose';
 import { User, UserModel } from "../models/user/user.model";
 
   // dotenv.config();

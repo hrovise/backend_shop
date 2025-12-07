@@ -9,7 +9,7 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 
 // Роуты и модели через __dirname
-const postsRoutes = require("./routes/posts");
+const postsRoutes = require("./routes/post");
 const userRoutes = require("./routes/user");
 const shopRoutes = require("./routes/shop");
 

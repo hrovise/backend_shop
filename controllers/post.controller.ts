@@ -41,7 +41,7 @@ export const createCategory = async (req:Request, res:Response) => {
 
 
 export const createPost = async (req:Request, res:Response) => {
- const url = req.protocol + '://' + req.get("host");
+ 
   
   if (req.userData.role === ROLE_ADMIN) {
     const post:CreatePostDto ={
@@ -51,7 +51,7 @@ export const createPost = async (req:Request, res:Response) => {
       content: req.body.content,
       contentLarge: req.body.contentLarge,
      quantity: req.body.quantity.split(',').map((item: string) => parseInt(item, 10)),
-      imagePath: url + IMAGE + req.file.filename,
+      imagePath: req.file.path,
       userId: req.userData.userId
     }
 
@@ -111,7 +111,7 @@ export const updatePost = async (req:Request, res:Response) => {
     content: req.body.content,
     contentLarge: req.body.contentLarge,
    quantity: req.body.quantity.split(',').map((item: string) => parseInt(item, 10)),
-    imagePath: url + IMAGE + req.file.filename,
+    imagePath: req.file.path,
     userId: req.userData.userId
   }
   await PostModel.updateOne({_id:id.toString()}, post)
