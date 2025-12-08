@@ -4,7 +4,7 @@ const Post = require('../models/post/post.model').Post;
 const Auth = require("../middleware/check-auth");
 const User = require("../models/user/user.model").UserModel;
 const Order = require('../models/order/order.model').OrderModel;
-
+import * as ShopController from '../controllers/shop.controller';   
 
 
 
@@ -19,24 +19,7 @@ const Process = ({
 
 })
 
-router.delete('/:id', Auth, (req, res, next) => {
-
-
-  let postId = req.params.id;
-
-  User.findById(req.userData.userId)
-    .then(user => {
-      req.user = user;
-
-
-      req.user
-        .removeFromCart(postId)
-        .then(() => {
-          res.json({message: 'deleted'})
-        })
-        .catch(err => console.log(err))
-    })
-});
+router.delete('/:id', Auth, ShopController.deleteFromCart);
 //  router.get('/cart', isAuth, shopController.getCart);
 
 router.post('/order', Auth, async(req, res, next) => {
@@ -204,7 +187,7 @@ router.get('/orders', Auth, (req, res, next) => {
     orderQuery.find({ 'user.userId': req.userData.userId })
 
       .then(items => {
-        item=items;
+        items=items;
 
 
           res.status(200).json({
