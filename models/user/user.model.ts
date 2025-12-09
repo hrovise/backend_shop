@@ -1,10 +1,11 @@
 import { prop, getModelForClass, Ref } from '@typegoose/typegoose';
 import mongoose from "mongoose";
 import { AccessHash } from './access_hash/access_hash.model';
-
+import { Post } from '../post/post.model';
+import  { DocumentType } from '@typegoose/typegoose';
 class CartItem {
-  @prop({ required: true, ref: 'Post' }) // Ссылка на модель 'Post' (даже если она на чистом Mongoose)
-  public postId!: mongoose.Types.ObjectId;
+  @prop({ required: true, ref:() => Post }) // Ссылка на модель 'Post' (даже если она на чистом Mongoose)
+  public postId!: Ref<Post>;
 
   @prop({ required: true })
   public quantity!: number;
@@ -45,9 +46,16 @@ export class User {
   public accessHashId?: mongoose.Types.ObjectId;
 
 
-
+public async clearCart(this: DocumentType<User>) {
+   
+    this.cart = { items: [] }; 
+    
+   
+    return this.save(); 
+  }
 
 
 }
+  
 
 export const UserModel = getModelForClass(User);

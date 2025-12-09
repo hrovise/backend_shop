@@ -22,62 +22,7 @@ const Process = ({
 router.delete('/:id', Auth, ShopController.deleteFromCart);
 //  router.get('/cart', isAuth, shopController.getCart);
 
-router.post('/order', Auth, async(req, res, next) => {
-
-
-
- User.findById(req.userData.userId)
-    .then(user => {
-      req.user = user;
-
-
-
-
-//тут Populate не потрібен
-req.user
- .populate('cart.items.postId')
-  .then(user => {
-  const posts = user.cart?.items.map(i => {
-
-
-            return { quantity: i.quantity, post: {...i.postId._doc } }
-  });
-      const order = new Order({
-        date: req.body.date,
-        user: {
-            email: req.user.email,
-
-            nameCompany: req.user.nameCompany,
-            contacts: req.user.contacts,
-            city: req.user.city,
-            userId: req.user._id
-        },
-        posts: posts,
-        process: Process.ORDERED,
-         code: req.body.code.codeE
-        });
-   return  order.save();
-})
-
-
-
-
-
-
-
-
-
-
-        .then(result => {
-    return  req.user.clearCart()
-
-        })
-        .then(() => {
-          res.json({})
-        })
-    .catch(err => console.log(err));
-  });
- })
+router.post('/order', Auth, ShopController.orderCreate);
 
 
 router.post('/cart/:id', Auth, (req, res, next) => {

@@ -7,6 +7,10 @@ declare global {
         userId: string;
         email: string;
         role:string;
+        nameCompany:string;
+        contacts:string;
+        city:string;
+        _id:string;
       }
     }
   }
