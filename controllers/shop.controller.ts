@@ -72,3 +72,30 @@ await user.clearCart();
  return order.save();
  
    };
+
+
+export const cartId = async (req:Request, res:Response) => {
+
+let postId = req.params.id;
+  let insideUser;
+  let quantity = +req.body.quantity;
+
+
+   UserModel.findById({ _id: req.userData.userId, })
+    .then(user => {
+
+      return insideUser = user;
+    });
+
+
+  PostModel.findById(postId).then(product => {
+
+
+    return UserModel.findById(req.userData.userId).then(user => {
+      user.addToCart(product, quantity); //req.body.25/1000/200
+    })
+
+  }).then(() => {
+    res.json('success')
+  })
+}

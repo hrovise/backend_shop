@@ -53,9 +53,38 @@ public async clearCart(this: DocumentType<User>) {
    
     return this.save(); 
   }
+public async addToCart (this:DocumentType<User>, product, quant, ) { //25,1000
 
+      const cartProductIndex = await this.cart.items.findIndex(cp => {
+
+            return cp.postId.toString() === product._id.toString();
+        });
+        let newQuantity = quant; //25/1000
+        const updatedCartItems = [...this.cart.items];
+
+        if (cartProductIndex >= 0) {
+            newQuantity = this.cart.items[cartProductIndex].quantity + quant;//25/1000/
+            updatedCartItems[cartProductIndex].quantity = newQuantity;
+        } else {
+            updatedCartItems
+                .push({postId: product._id, quantity: newQuantity, imagePath: product.imagePath  })
+        }
+
+        const updatedCart = {
+      items: updatedCartItems
+    };
+
+
+
+  this.cart = updatedCart;
+  let i = 0;
+
+  return this.save();
+
+
+}  
 
 }
-  
+
 
 export const UserModel = getModelForClass(User);
