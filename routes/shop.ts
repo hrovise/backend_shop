@@ -52,30 +52,7 @@ router.post('/cart/:id', Auth, (req, res, next) => {
 });
 
 
-router.get('/cart', Auth, (req, res, next) => {
-
- User.findById(req.userData.userId)
-    .then(user => {
-      req.user = user;
-
-       req.user
-
-    .populate('cart.items.postId')
-
-
-
-    .then(user => {
-
-      const posts = user.cart.items;
-      res.json({
-
-        posts: posts,
-
-      });
-    })
-    .catch(err => console.log(err));
-});
-    });
+router.get('/cart', Auth, ShopController.cartAll);
 
 router.post('/orderstatus', Auth, async(req, res, next) => {
 

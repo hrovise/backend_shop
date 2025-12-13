@@ -99,3 +99,10 @@ let postId = req.params.id;
     res.json('success')
   })
 }
+
+export const cartAll =  async (req:Request, res:Response) => {
+    
+  const user = await UserModel.findById(req.userData.userId);
+  const posts = await user.populate('cart.items.postId');
+  res.json(posts.cart.items);
+}
