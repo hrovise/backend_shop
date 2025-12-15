@@ -106,3 +106,22 @@ export const cartAll =  async (req:Request, res:Response) => {
   const posts = await user.populate('cart.items.postId');
   res.json(posts.cart.items);
 }
+
+export const orderStatus = async (req:Request, res:Response) => {
+
+
+    await OrderModel.updateOne({ _id: req.body.id },
+    {
+      process:req.body.process
+   }
+
+ ).then(order => {
+
+    res.status(200).json({
+          message: 'status changed'
+
+
+
+        })
+  })
+}

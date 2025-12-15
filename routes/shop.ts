@@ -54,24 +54,7 @@ router.post('/cart/:id', Auth, (req, res, next) => {
 
 router.get('/cart', Auth, ShopController.cartAll);
 
-router.post('/orderstatus', Auth, async(req, res, next) => {
-
-  await Order.updateOne({ _id: req.body.id },
-    {
-      process:req.body.process
-   }
-
- ).then(order => {
-
-    res.status(200).json({
-          message: 'status changed'
-
-
-
-        })
-  })
-
-});
+router.post('/orderstatus', Auth, ShopController.orderStatus);
 
 router.get('/orders', Auth, (req, res, next) => {
 
