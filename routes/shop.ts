@@ -56,57 +56,6 @@ router.get('/cart', Auth, ShopController.cartAll);
 
 router.post('/orderstatus', Auth, ShopController.orderStatus);
 
-router.get('/orders', Auth, (req, res, next) => {
-
-   const pageSize = +req.query.pagesize;
-  const currentPage = +req.query.page;
-  const orderQuery = Order.find();
-  let fetchedOrders;
-
-  if (pageSize && currentPage) {
-    orderQuery.skip(pageSize * (currentPage - 1))
-      .limit(pageSize);
-
-  }
-  if (req.userData.role === ROLE_ADMIN) {
-    orderQuery
-      .then(items => {
-        fetchedOrders = items;
-        return Order.countDocuments();
-      })
-      .then(count => {
-
-
-
-        res.status(200).json({
-          message: 'Orders are fetched for admin',
-
-          orders: fetchedOrders,
-          maxOrders: count
-
-        })
-
-      });
-  }
-  else {
-    orderQuery.find({ 'user.userId': req.userData.userId })
-
-      .then(items => {
-        items=items;
-
-
-          res.status(200).json({
-            message: 'Orders are fetched',
-            date: items.date,
-            orders: items,
-            process: items.process
-
-
-        })
-
-      });
-  }
-});
-
+router.get('/orders', Auth, ShopController.getOrders);
 
 module.exports = router;

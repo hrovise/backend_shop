@@ -125,3 +125,54 @@ export const orderStatus = async (req:Request, res:Response) => {
         })
   })
 }
+
+export const getOrders = async (req:Request, res:Response) => {
+    const pageSize = +req.query.pagesize;
+  const currentPage = +req.query.page;
+  const orderQuery = OrderModel.find();
+  let fetchedOrders;
+
+  if (pageSize && currentPage) {
+    orderQuery.skip(pageSize * (currentPage - 1))
+      .limit(pageSize);
+
+  }
+  if (req.userData.role === ROLE_ADMIN) {
+    orderQuery
+      .then(items => {
+        fetchedOrders = items;
+        return OrderModel.countDocuments();
+      })
+      .then(count => {
+
+
+
+        res.status(200).json({
+          message: 'Orders are fetched for admin',
+
+          orders: fetchedOrders,
+          maxOrders: count
+
+        })
+
+      });
+  }
+  else {
+    orderQuery.find({ 'user.userId': req.userData.userId })
+
+      .then(items  => {
+        items=items;
+
+            //todo process, date
+          res.status(200).json({
+            message: 'Orders are fetched',
+            // date: items.date,
+            orders: items,
+            // process: items.process
+
+
+        })
+
+      });
+  }
+}
