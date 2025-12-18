@@ -15,7 +15,7 @@ const userService = new UserService();
 
 export const signup = async (req: Request, res: Response) => {
   const existingUser = await userService.checkExistingUser(req.body.email);
-console.log("exist", existingUser)
+
   if (existingUser) { 
     return res.send({ message: "User is exist" });
   }
