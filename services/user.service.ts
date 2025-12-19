@@ -9,10 +9,11 @@ export class UserService {
 
 
 
-  // async saveUser(user: createUserDto): Promise<User> {
+  async saveUser(user: createUserDto): Promise<User> {
     
-  //  todo
-  // }
+   //todo
+   return UserModel.create(user);
+  }
 
 
   async addToCart(user: DocumentType<User>, product: any, quant: number): Promise<DocumentType<User>> {
